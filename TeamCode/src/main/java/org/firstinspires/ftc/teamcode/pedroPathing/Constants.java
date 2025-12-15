@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import com.pedropathing.control.FilteredPIDFCoefficients;
+import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
@@ -15,8 +17,31 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 public class Constants {
-    public static FollowerConstants followerConstants = new FollowerConstants() //update
-    .mass(5);
+        public static FollowerConstants followerConstants = new FollowerConstants()
+                .mass(16.2)
+                .forwardZeroPowerAcceleration(-43.394)
+                .lateralZeroPowerAcceleration(-62.7616)
+                .translationalPIDFCoefficients(new PIDFCoefficients(
+                        0.3,
+                        0,
+                                .03,
+                        0
+                ))
+                .headingPIDFCoefficients(new PIDFCoefficients(
+                        1.5,
+                        0,
+                        0.05,
+                        0.05
+                ))
+                .drivePIDFCoefficients(new FilteredPIDFCoefficients(
+                        0.015,
+                        0,
+                        0.00005,
+                        0.6,
+                        0.01
+                ))
+                .centripetalScaling(0.0005);
+
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
@@ -24,10 +49,12 @@ public class Constants {
             .rightRearMotorName("br")
             .leftRearMotorName("bl")
             .leftFrontMotorName("fl")
-            .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD);
+            .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .leftFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .xVelocity(71.378)
+            .yVelocity(53.616);
 
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
@@ -50,5 +77,4 @@ public class Constants {
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
-
 }
