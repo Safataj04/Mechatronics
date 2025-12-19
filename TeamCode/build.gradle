@@ -29,4 +29,11 @@ android {
 
 dependencies {
     implementation project(':FtcRobotController')
+    implementation "dev.frozenmilk.dairy:CachingHardware:1.0.0"
+}
+
+repositories {
+    maven {
+        url "https://repo.dairy.foundation/releases"
+    }
 }
