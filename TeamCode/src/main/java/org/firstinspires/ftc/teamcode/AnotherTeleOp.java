@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.bylazar.telemetry.PanelsTelemetry;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -33,11 +34,11 @@ public class AnotherTeleOp extends LinearOpMode {
     private DcMotor indexer;
     private CRServo turret;
     private AnalogInput turretPOT;
-    public static Follower follower;
+    public Follower follower;
     private double turretOffset = 5.5;
     private double rawTurretZero = 193.9;
     private double testingRelativeTurretPosition = 15.0;
-    private double redShooter = 10;
+    private double redShooter = 26;
 
     // Turret control parameters
     private static final double TURRET_TARGET = 15.0;  // ABSOLUTE target position (15°)
@@ -53,7 +54,7 @@ public class AnotherTeleOp extends LinearOpMode {
     static final double MAX_VOLTAGE = 3.3;
     static final double DEGREES_PER_REV = 360.0;
 
-    private Pose redGoalPs = new Pose (86.2, 134.5, Math.toRadians(0));
+    private Pose redGoalPs = new Pose (86.2, 134.5, Math.toRadians(redShooter));
     private Pose blueGoalPs = new Pose(34.9, 121.9, Math.toRadians(0));
     Pose blueStart = new Pose(33, 136, Math.toRadians(0));
 
@@ -260,7 +261,6 @@ public class AnotherTeleOp extends LinearOpMode {
 
         while(opModeIsActive()){
 
-            pinpoint.update();
             Pose2D pos = pinpoint.getPosition();
 
             double yaw = pos.getHeading(AngleUnit.DEGREES);
@@ -271,6 +271,7 @@ public class AnotherTeleOp extends LinearOpMode {
                     yaw,
                     redGoalPs);
             double rawDeg = (turretPOT.getVoltage()/3.3)*360;
+            pinpoint.update();
 
             double largeGearCurrentPosition = -(turnCount*52+(mapValue(turretPOT.getVoltage())*52));
 
@@ -278,6 +279,8 @@ public class AnotherTeleOp extends LinearOpMode {
             telemetry.addData("Yaw (degrees)", yaw);
             telemetry.addData("X TICKS", pinpoint.getEncoderX());
             telemetry.addData("Y TICKS", pinpoint.getEncoderY());
+            telemetry.addData("Follower X", follower.getPose().getX());
+            telemetry.addData("Follower Y", follower.getPose().getY());
             telemetry.addData("shooterAngle", turretAngle);
             telemetry.addData("current turret ang", rawDeg);
             telemetry.addData("voltage", turretPOT.getVoltage());
@@ -311,8 +314,8 @@ public class AnotherTeleOp extends LinearOpMode {
             telemetry.addData("red Shooter", redShooter);
             // NEW IMPROVED TURRET CONTROL
             if (gamepad1.right_bumper){
-                redShooter++;
-                turret.setPower(1);
+//                redShooter++;
+//                turret.setPower(1);
 
                 // CHOOSE ONE:
                 // Option 1: Simple with deceleration (easier to tune)
@@ -321,15 +324,13 @@ public class AnotherTeleOp extends LinearOpMode {
                 // Option 2: Advanced with velocity prediction (more accurate)
                 // controlTurretAdvanced(largeGearCurrentPosition, TURRET_TARGET);
             }
-
-            if (gamepad1.left_bumper) {
-                redShooter--;
-                turret.setPower(-1);
-            } else if (gamepad1.b) {
+            if (gamepad1.b) {
                 shooter1.setPower(1);
                 shooter2.setPower(1);
-            }else {
-                turret.setPower(0);
+            }
+
+            if (gamepad1.leftBumperWasReleased()){
+                controlTurretSimple(largeGearCurrentPosition,turretAngle);
             }
 
 //            follower.setTeleOpDrive(-gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x, false);
